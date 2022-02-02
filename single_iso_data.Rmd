@@ -1,0 +1,100 @@
+---
+title: "PETM Sample Single Isotope Data"
+subtitle: "From Bowen et al., 2001"
+author: "Rachel Havranek"
+date: "`r format(Sys.Date(), '%d %b %Y')`"
+output:
+  html_document: 
+    df_print: paged # omit to disable paged data table output
+    css: stylesheet.css # omit if no need for custom stylesheet
+    number_sections: yes # change to no for unnumbered sections
+    toc: yes # change to no to disable table of contents
+    toc_float: true # change to false to keep toc at the top
+    toc_depth: 3 # change to specify which headings to include in toc
+    code_folding: show # change to hide to hide code by default
+editor_options:
+  chunk_output_type: console # change to inline to show output inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load libraries
+library(tidyverse) 
+library(latex2exp)
+library(readr)
+
+# source all relevant scripting files
+source(file.path("scripts", "plotting_functions.R"))
+source(file.path("scripts", "table_functions.R"))
+
+# global knitting options for automatic saving of all plots as .png and .pdf
+knitr::opts_chunk$set(
+  dev = c("png", "pdf"), fig.keep = "all",
+  dev.args = list(pdf = list(encoding = "WinAnsi", useDingbats = FALSE)),
+  fig.path = file.path("plots", paste0(gsub("\\.[Rr]md", "", knitr::current_input()), "_"))
+)
+```
+
+```{r data, include=FALSE}
+Bowen2001_data <- read_csv("data/Bowen2001_data.csv")
+
+first_round <- Bowen2001_data %>% 
+  filter (
+    Strat_Level_m ==1494.4 |
+    Strat_Level_m == 1498.5 |
+    Strat_Level_m == 1499.7 |
+    Strat_Level_m == 1500.3 |
+    Strat_Level_m == 1508.7 |
+    Strat_Level_m == 1521.9 |
+    Strat_Level_m == 1530.5 |
+    Strat_Level_m == 1534.8 |
+    Strat_Level_m == 1545.1  
+        )
+```
+
+```{r}
+p1 <- Bowen2001_data %>% 
+  pivot_longer(cols = c(d13C, d18O)) %>% 
+    ggplot() +
+      aes(x = value, y = Strat_Level_m) +
+      geom_point() +
+      facet_wrap(~name, scales = "free")+
+      geom_hline(yintercept  = 1500, linetype = "dashed") +
+      geom_hline(yintercept =  1532, linetype = "dashed")+
+      scale_y_continuous(limits = c(1475, 1600))+
+      theme_figure(text_size = 16)
+
+p1
+```
+
+Out of the 19 samples I've selected from Paul and Gabe's sample set, I've chosen 9 samples to initially focus on.
+```{r, echo=FALSE}
+p2 <- Bowen2001_data %>% 
+  filter(
+    Strat_Level_m ==1494.4 |
+    Strat_Level_m == 1498.5 |
+    Strat_Level_m == 1499.7 |
+    Strat_Level_m == 1500.3 |
+    Strat_Level_m == 1508.7 |
+    Strat_Level_m == 1521.9 |
+    Strat_Level_m == 1530.5 |
+    Strat_Level_m == 1534.8 |
+    Strat_Level_m == 1545.1  
+  ) %>% 
+    pivot_longer(cols = c(d13C, d18O)) %>% 
+      ggplot() +
+        aes(x = value, y = Strat_Level_m) +
+        geom_point() +
+        facet_wrap(~name, scales = "free")+
+        geom_hline(yintercept  = 1500, linetype = "dashed") +
+        geom_hline(yintercept =  1532, linetype = "dashed")+
+        scale_y_continuous(limits = c(1475, 1600))+
+        labs(title = "First Priority Samples") +
+        theme_figure(text_size = 16)
+
+p2
+```
+
+
+
